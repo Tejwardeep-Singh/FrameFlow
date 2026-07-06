@@ -23,7 +23,7 @@ Cinematic Scroll-Driven Image Sequence Engine built using HTML5 Canvas and JavaS
 
 FrameFlow is a lightweight JavaScript engine that creates cinematic scroll-driven animations using an image sequence rendered on an HTML5 Canvas.
 
-Instead of playing a traditional video, FrameFlow synchronizes the user's scroll position with a sequence of rendered frames, creating a premium interactive experience similar to modern product landing pages.
+
 
 ---
 
