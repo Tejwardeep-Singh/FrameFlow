@@ -1,56 +1,85 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
 const frameCount = 300;
 const images = [];
 
-for(let i=1;i<=frameCount;i++){
-    const img=new Image();
-    img.src=
-    `frames/${String(i).padStart(4,"0")}.webp`;
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+
+for (let i = 1; i <= frameCount; i++) {
+    const img = new Image();
+    img.src = `frames/${String(i).padStart(4, "0")}.webp`;
     images.push(img);
-
 }
 
-function drawFrame(index){
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+function drawFrame(index) {
+
+    const img = images[index];
+
+    if (!img.complete) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const canvasRatio = canvas.width / canvas.height;
+    const imageRatio = img.width / img.height;
+
+    let drawWidth, drawHeight;
+    let offsetX, offsetY;
+
+    if (canvasRatio > imageRatio) {
+
+        drawWidth = canvas.width;
+        drawHeight = drawWidth / imageRatio;
+
+        offsetX = 0;
+        offsetY = (canvas.height - drawHeight) / 2;
+
+    } else {
+
+        drawHeight = canvas.height;
+        drawWidth = drawHeight * imageRatio;
+
+        offsetY = 0;
+        offsetX = (canvas.width - drawWidth) / 2;
+
+    }
+
     ctx.drawImage(
-        images[index],
-        0,
-        0,
-        canvas.width,
-        canvas.height
+        img,
+        offsetX,
+        offsetY,
+        drawWidth,
+        drawHeight
     );
 }
 
-images[0].onload=()=>{
-    drawFrame(0);
-}
-window.addEventListener("scroll",()=>{
-});
+function updateFrame() {
 
+    const maxScroll =
+        document.body.scrollHeight - window.innerHeight;
 
-const maxScroll = document.body.scrollHeight- window.innerHeight;
-const scrollFraction = window.scrollY/maxScroll;
-const frame=Math.floor(
-scrollFraction*
-(frameCount-1)
-);
+    const scrollFraction = window.scrollY / maxScroll;
 
-drawFrame(frame);
+    const frame = Math.min(
+        frameCount - 1,
+        Math.floor(scrollFraction * (frameCount - 1))
+    );
 
-window.addEventListener("scroll",()=>{
-
-    const maxScroll = document.body.scrollHeight - window.innerHeight;
-    const scrollFraction = window.scrollY/maxScroll;
-    const frame=Math.floor( scrollFraction * (frameCount-1));
     drawFrame(frame);
+}
+
+images[0].onload = () => {
+    drawFrame(0);
+};
+
+window.addEventListener("scroll", updateFrame);
+
+window.addEventListener("resize", () => {
+    resizeCanvas();
+    updateFrame();
 });
